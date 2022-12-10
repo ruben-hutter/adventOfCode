@@ -48,10 +48,10 @@ def second_part():
 
 def print_crt(crt):
     print('CRT result:')
-    print(' ' + '-' * 40 + ' ')
+    print(' ' + '-' * 79 + ' ')
     for line in crt:
-        print('|' + ''.join(line) + '|')
-    print(' ' + '-' * 40 + ' ')
+        print('|' + ' '.join(line) + '|')
+    print(' ' + '-' * 79 + ' ')
 
 def main():
     first_part()
