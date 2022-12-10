@@ -12,8 +12,9 @@ def first_part():
         cmd = instruction[:4]
         if cmd == 'addx':
             cycle += 1
-            if cycle % 40 == 20:
+            if cycle % 40 == 20: # 20, 60, 100, 140, 180, 220
                 signal_strength += cycle * reg_x
+
             cycle += 1
             if cycle % 40 == 20:
                 signal_strength += cycle * reg_x
@@ -31,17 +32,16 @@ def second_part():
         cmd = instruction[:4]
         if cmd == 'addx':
             cycle += 1
-            # check if pixel is drawn
+            # check if pixel is drawn --> in sprite
             if (cycle-1)%40 in [reg_x-1, reg_x, reg_x+1]:
-                CRT[(cycle-1)//40][(cycle-1)%40] = DRAW
+                CRT[(cycle-1)//40][(cycle-1)%40] = DRAW # CRT[0-5][0-39]
+
             cycle += 1
-            # check if pixel is drawn
             if (cycle-1)%40 in [reg_x-1, reg_x, reg_x+1]:
                 CRT[(cycle-1)//40][(cycle-1)%40] = DRAW
             reg_x += int(instruction[4:]) # increse register
         else:
             cycle += 1
-            # check if pixel is drawn
             if (cycle-1)%40 in [reg_x-1, reg_x, reg_x+1]:
                 CRT[(cycle-1)//40][(cycle-1)%40] = DRAW
     print_crt(CRT)
