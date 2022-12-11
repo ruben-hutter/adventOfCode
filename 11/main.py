@@ -1,4 +1,4 @@
-with open("11/input", 'r') as f:
+with open("11/test_input", 'r') as f:
     lines = f.read()
 
 lines = [line for line in lines.split('\n\n')] # divides input in paragraphs
@@ -16,6 +16,12 @@ for line in lines:
 
     # define monkey as list of the above defined elements
     monkeys.append([items, operation, test, if_true, if_false])
+
+# define prime number test0 * test1 * ...
+primes = 1
+for monkey in monkeys:
+    primes *= monkey[-3]
+print(primes)
 
 def first_part():
     inspections = [0 for _ in range(len(monkeys))]
@@ -37,7 +43,23 @@ def first_part():
     print(f'Total inspections: {most_active_1 * most_active_2}')
 
 def second_part():
-    return
+    inspections = [0 for _ in range(len(monkeys))]
+    round_n = 0
+    while round_n < 10000:
+        for idx, monkey in enumerate(monkeys):
+            new_items = [monkey[1](old%primes) for old in monkey[0]]
+            monkey[0].clear() # remove items from current monkey
+            # throw item to next monkey
+            for item in new_items:
+                inspections[idx] += 1
+                if item % monkey[-3] == 0:
+                    monkeys[monkey[-2]][0].append(item)
+                else:
+                    monkeys[monkey[-1]][0].append(item)
+        round_n += 1
+    inspections.sort()
+    most_active_1, most_active_2 = inspections[-2:]
+    print(f'Total inspections: {most_active_1 * most_active_2}')
 
 def main():
     first_part()
