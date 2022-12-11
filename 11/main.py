@@ -1,23 +1,40 @@
 with open("11/input", 'r') as f:
-    monkeys = f.read()
+    lines = f.read()
 
-monkeys = [monkey for monkey in monkeys.split('\n\n')]
-monkeys = [monkey.split('\n') for monkey in monkeys]
-monkeys = [[elem.strip() for elem in monkey] for monkey in monkeys]
+lines = [line for line in lines.split('\n\n')] # divides input in paragraphs
+lines = [line.split('\n') for line in lines] # divides every paragraph in lines
+lines = [[elem.strip() for elem in line] for line in lines] # removes trailing spaces
 
+monkeys = []
 # [Monkey 0: [[54, 89, 94], 'old * 7', 17, 5, 3], ...]
-for monkey in monkeys:
-    items = monkey[1][16:].split(', ')
-    operation = lambda old, op=monkey[2][17:]: eval(op)
-    test = int(monkey[3].rsplit(maxsplit=1)[-1])
-    if_true = int(monkey[4].rsplit(maxsplit=1)[-1])
-    if_false = int(monkey[5].rsplit(maxsplit=1)[-1])
+for line in lines:
+    items = [int(i) for i in line[1][16:].split(', ')]
+    operation = lambda old, op=line[2][17:]: eval(op)
+    test = int(line[3].rsplit(maxsplit=1)[-1])
+    if_true = int(line[4].rsplit(maxsplit=1)[-1])
+    if_false = int(line[5].rsplit(maxsplit=1)[-1])
 
     # define monkey as list of the above defined elements
-    monkey = [items, operation, test, if_true, if_false]
+    monkeys.append([items, operation, test, if_true, if_false])
 
 def first_part():
-    return
+    inspections = [0 for _ in range(len(monkeys))]
+    round_n = 0
+    while round_n < 20:
+        for idx, monkey in enumerate(monkeys):
+            new_items = [monkey[1](old)//3 for old in monkey[0]]
+            monkey[0].clear() # remove items from current monkey
+            # throw item to next monkey
+            for item in new_items:
+                inspections[idx] += 1
+                if item % monkey[-3] == 0:
+                    monkeys[monkey[-2]][0].append(item)
+                else:
+                    monkeys[monkey[-1]][0].append(item)
+        round_n += 1
+    inspections.sort()
+    most_active_1, most_active_2 = inspections[-2:]
+    print(f'Total inspections: {most_active_1 * most_active_2}')
 
 def second_part():
     return
