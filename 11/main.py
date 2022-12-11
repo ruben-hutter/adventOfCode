@@ -1,11 +1,13 @@
-with open("11/test_input", 'r') as f:
+from copy import deepcopy
+
+with open("11/input", 'r') as f:
     lines = f.read()
 
 lines = [line for line in lines.split('\n\n')] # divides input in paragraphs
 lines = [line.split('\n') for line in lines] # divides every paragraph in lines
 lines = [[elem.strip() for elem in line] for line in lines] # removes trailing spaces
 
-monkeys = []
+MONKEYS = []
 # [Monkey 0: [[54, 89, 94], 'old * 7', 17, 5, 3], ...]
 for line in lines:
     items = [int(i) for i in line[1][16:].split(', ')]
@@ -15,15 +17,15 @@ for line in lines:
     if_false = int(line[5].rsplit(maxsplit=1)[-1])
 
     # define monkey as list of the above defined elements
-    monkeys.append([items, operation, test, if_true, if_false])
+    MONKEYS.append([items, operation, test, if_true, if_false])
 
 # define prime number test0 * test1 * ...
 primes = 1
-for monkey in monkeys:
+for monkey in MONKEYS:
     primes *= monkey[-3]
-print(primes)
 
 def first_part():
+    monkeys = deepcopy(MONKEYS)
     inspections = [0 for _ in range(len(monkeys))]
     round_n = 0
     while round_n < 20:
@@ -43,11 +45,12 @@ def first_part():
     print(f'Total inspections: {most_active_1 * most_active_2}')
 
 def second_part():
+    monkeys = deepcopy(MONKEYS)
     inspections = [0 for _ in range(len(monkeys))]
     round_n = 0
     while round_n < 10000:
         for idx, monkey in enumerate(monkeys):
-            new_items = [monkey[1](old%primes) for old in monkey[0]]
+            new_items = [monkey[1](old)%primes for old in monkey[0]]
             monkey[0].clear() # remove items from current monkey
             # throw item to next monkey
             for item in new_items:
