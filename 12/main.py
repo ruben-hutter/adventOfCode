@@ -1,13 +1,24 @@
 from collections import deque
 
+graph = {}
+
 with open("12/test_input", 'r') as f:
     in_file = f.read().splitlines()
-    grid = [[ord(letter)-ord('a') for letter in line] for line in in_file]
-    # TODO handle case S and E -> save coordinates of nodes and
-    # set S = 0, E = 26
-    # set correct value in grid
+    for row, line in enumerate(in_file):
+        for col, letter in enumerate(line):
+            if letter == 'S':
+                # start_node
+                start_node = (row,col)
+                graph[(row,col)] = (0, [])
+            elif letter == 'E':
+                # end_node
+                end_node = (row,col)
+                graph[(row,col)] = (26, [])
+            else:
+                graph[(row,col)] = (ord(letter)-ord('a'), [])
+            # append neighbors
 
-print(grid)
+print(graph)
 
 def first_part():
     return
@@ -19,7 +30,7 @@ def bfs_with_predecessors(graph, node):
     queue.append(node)
     while queue:
         v = queue.popleft()
-        for s in graph.successors(v):
+        for s in graph[v][1]:
             if s not in predecessor:
                 predecessor[s] = v
                 queue.append(s)
