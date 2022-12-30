@@ -1,53 +1,57 @@
 signals = [] # contains tuples of packets
 
-with open("13/test_input", 'r') as f:
-    in_packet1, in_packet2, _ = [f.readline().strip() for _ in range(3)]
-    while in_packet1:
-        signals.append((map(eval, [in_packet1, in_packet2])))
-        in_packet1, in_packet2, _ = [f.readline().strip() for _ in range(3)]
-
 def first_part():
+    with open("13/input", 'r') as f:
+        in_packet1, in_packet2, _ = [f.readline().strip() for _ in range(3)]
+        while in_packet1:
+            signals.append((map(eval, [in_packet1, in_packet2])))
+            in_packet1, in_packet2, _ = [f.readline().strip() for _ in range(3)]
     res = 0
     for idx, signal in enumerate(signals):
         packet1, packet2 = signal
-        cmp_res = compare(packet1, packet2, 0)
-        if cmp_res == 0:
+        if compare(packet1, packet2) == 1:
             res += idx+1
-            print(idx+1)
-        else:
-            print()
     print(f'Total: {res}')
 
 # if elem1 <= elem2 return 0 else return 1
-def compare(packet1, packet2, idx):
-    # if list empty
-    if not packet1:
-        return 0
-    elif packet1 and not packet2:
-        return 1
-    l_len, r_len = len(packet1), len(packet2)
-    if idx >= l_len:
-        return 0
-    elif idx >= r_len:
-        return 1
+def compare(packet1, packet2):
     # if one list and other val -> make val list
-    if isinstance(packet1[idx], list) and isinstance(packet2[idx], int):
-        packet2[idx] = [packet2[idx]]
-    elif isinstance(packet1[idx], int) and isinstance(packet2[idx], list):
-        packet1[idx] = [packet1[idx]]
+    if isinstance(packet1, list) and isinstance(packet2, int):
+        packet2 = [packet2]
+    elif isinstance(packet1, int) and isinstance(packet2, list):
+        packet1 = [packet1]
     # if both list -> call recursive
-    if isinstance(packet1[idx], list) and isinstance(packet2[idx], list):
-        if compare(packet1[idx], packet2[idx], 0) == 1:
-            return 1
+    if isinstance(packet1, list) and isinstance(packet2, list):
+        return _compare(packet1, packet2)
     # both are values
-    if packet1[idx] > packet2[idx]:
+    if packet1 < packet2:
         return 1
-    if compare(packet1, packet2, idx+1) == 1:
-        return 1
+    elif packet2 < packet1:
+        return -1
     return 0
 
+def _compare(packet1, packet2):
+    idx = 0
+    l_len, r_len = len(packet1), len(packet2)
+    while idx < l_len and idx < r_len:
+        res = compare(packet1[idx], packet2[idx])
+        if res == 1:
+            return 1
+        elif res == -1:
+            return -1
+        idx += 1
+    if idx == l_len:
+        if l_len == r_len:
+            return 0
+        return 1
+    return -1
+
 def second_part():
-    return
+    with open("13/input", 'r') as f:
+        in_packets = f.readline().strip()
+        while in_packet1:
+            signals.append((map(eval, [in_packet1, in_packet2])))
+            in_packet1, in_packet2, _ = [f.readline().strip() for _ in range(3)]
 
 def main():
     first_part()
