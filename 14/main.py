@@ -2,9 +2,9 @@ with open("14/input", 'r') as f:
     in_file = f.read().splitlines()
     in_file = [[eval(c) for c in l.split(" -> ")] for l in in_file]
 
-POURING_POINT = (500, 0)
+POURING_POINT = (500, 0) # where sand starts
 
-filled = set()
+filled = set() # coordinates that are filled
 
 def first_part():
     # initial rock setup
@@ -27,6 +27,12 @@ def first_part():
     print(f'Sand units: {count}')
 
 def sand_sim():
+    '''
+    Simulates sand placement.
+
+    Returns:
+        bool: True if sand is placed, False otherwise.
+    '''
     global filled
     max_y = max([c[1] for c in filled]) # terminating condition
     x, y = POURING_POINT
