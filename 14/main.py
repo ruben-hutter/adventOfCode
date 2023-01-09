@@ -1,9 +1,4 @@
-import sys
-
-# define coordinate type
-Coordinate = tuple[int, int]
-
-with open("14/test_input", 'r') as f:
+with open("14/input", 'r') as f:
     in_file = f.read().splitlines()
     in_file = [[eval(c) for c in l.split(" -> ")] for l in in_file]
 
