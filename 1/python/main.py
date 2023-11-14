@@ -3,7 +3,7 @@ def first_part():
     my_max = 0
     my_index = 0
 
-    with open("1/input", 'r') as f:
+    with open("1/input.txt", 'r') as f:
         line = f.readline()
         actual_sum = 0
         actual_index = 0
@@ -24,7 +24,7 @@ def first_part():
 # find the top 3 Elfs
 def second_part():
     top_three = [0 for _ in range(3)]
-    with open("1/input", 'r') as f:
+    with open("1/input.txt", 'r') as f:
         line = f.readline()
         actual_sum = 0
         while line:
