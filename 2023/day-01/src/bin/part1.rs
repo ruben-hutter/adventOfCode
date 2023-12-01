@@ -1,6 +1,6 @@
 fn main() {
     let input = include_str!("./input.txt");
-    println!("{}", part1(input));
+    println!("Sum of calibration values: {}", part1(input));
 }
 
 fn part1(input: &str) -> u32 {
@@ -11,7 +11,7 @@ fn part1(input: &str) -> u32 {
             let first = nums_iter.next().unwrap();
             let last = nums_iter.last().unwrap_or(first);
             let res = format!("{}{}", first, last).parse::<u32>().unwrap();
-            res
+            return res;
         })
         .sum()
 }
