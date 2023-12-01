@@ -7,11 +7,13 @@ fn part1(input: &str) -> u32 {
     input
         .lines()
         .map(|line| {
-            let mut nums_iter = line.chars().filter(|c| c.is_ascii_digit());
-            let first = nums_iter.next().unwrap();
+            let mut nums_iter = line.chars().filter(|c| c.is_digit(10));
+            let first = nums_iter.next().expect("should be a digit");
             let last = nums_iter.last().unwrap_or(first);
-            let res = format!("{}{}", first, last).parse::<u32>().unwrap();
-            return res;
+            match format!("{first}{last}").parse::<u32>() {
+                Ok(n) => n,
+                Err(_) => 0,
+            }
         })
         .sum()
 }
