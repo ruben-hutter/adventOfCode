@@ -8,14 +8,14 @@ fn part1(input: &str) -> u32 {
         .lines()
         .map(|line| {
             let mut nums_iter = line.chars().filter(|c| c.is_digit(10));
-            let first = nums_iter.next().expect("should be a digit");
+            let first = nums_iter.next().unwrap();
             let last = nums_iter.last().unwrap_or(first);
             match format!("{first}{last}").parse::<u32>() {
                 Ok(n) => n,
                 Err(_) => 0,
             }
         })
-        .sum()
+    .sum()
 }
 
 #[cfg(test)]
@@ -25,9 +25,9 @@ mod tests {
     #[test]
     fn test_part1() {
         let input = "1abc2
-pqr3stu8vwx
-a1b2c3d4e5f
-treb7uchet";
+            pqr3stu8vwx
+            a1b2c3d4e5f
+            treb7uchet";
         assert_eq!(142, part1(input));
     }
 }
