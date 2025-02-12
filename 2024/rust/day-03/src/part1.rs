@@ -4,16 +4,13 @@ use regex::Regex;
 pub fn process(input: &str) -> miette::Result<String> {
     let re = Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)").unwrap();
 
-    let result = input
-        .lines()
-        .fold(0, |acc, line| {
-            acc + re.captures_iter(line)
-                .fold(0, |sum, cap| {
-                    let a: u32 = cap[1].parse().unwrap();
-                    let b: u32 = cap[2].parse().unwrap();
-                    sum + a * b
-                })
-        });
+    let result = input.lines().fold(0, |acc, line| {
+        acc + re.captures_iter(line).fold(0, |sum, cap| {
+            let a: u32 = cap[1].parse().unwrap();
+            let b: u32 = cap[2].parse().unwrap();
+            sum + a * b
+        })
+    });
 
     Ok(result.to_string())
 }
