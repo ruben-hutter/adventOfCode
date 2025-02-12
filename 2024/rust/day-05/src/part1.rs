@@ -1,4 +1,4 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
 #[tracing::instrument]
 pub fn process(input: &str) -> miette::Result<String> {
@@ -12,8 +12,16 @@ pub fn process(input: &str) -> miette::Result<String> {
         }
 
         let mut values = line.split('|');
-        let a: u32 = values.next().unwrap().parse().expect("values should be numbers");
-        let b: u32 = values.next().unwrap().parse().expect("values should be numbers");
+        let a: u32 = values
+            .next()
+            .unwrap()
+            .parse()
+            .expect("values should be numbers");
+        let b: u32 = values
+            .next()
+            .unwrap()
+            .parse()
+            .expect("values should be numbers");
 
         ord_rules.entry(a).or_insert(HashSet::new()).insert(b);
     }
