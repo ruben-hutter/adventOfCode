@@ -60,12 +60,20 @@ fn check_rules(values: &[u32], ord_rules: &HashMap<u32, HashSet<u32>>) -> bool {
     false
 }
 
+/**
+ * Compute the in-degree of each value in the given set of values.
+ * The in-degree of a value is the number of values that must come before it.
+ *
+ * @param values The values to compute the in-degree for.
+ * @param ord_rules The order rules.
+ * @return A map from each value to its in-degree.
+ */
 fn compute_in_degree(
     values: &[u32],
     ord_rules: &HashMap<u32, HashSet<u32>>,
 ) -> HashMap<u32, usize> {
     let value_set: HashSet<u32> = values.iter().copied().collect();
-    let mut in_degree: HashMap<u32, usize> = values.iter().map(|&v| (v, 0)).collect();
+    let mut in_degree: HashMap<u32, usize> = HashMap::with_capacity(value_set.len());
 
     for (&before, after_set) in ord_rules {
         if !value_set.contains(&before) {
@@ -73,7 +81,7 @@ fn compute_in_degree(
         }
         for &after in after_set {
             if value_set.contains(&after) {
-                *in_degree.entry(after).or_insert(0) += 1;
+                in_degree.entry(after).and_modify(|d| *d += 1).or_insert(1);
             }
         }
     }
@@ -81,12 +89,20 @@ fn compute_in_degree(
     in_degree
 }
 
+/**
+ * Reorder values based on the given order rules.
+ * The values are sorted in topological order, given the order rules.
+ * The function uses Kahn's algorithm to sort the values.
+ *
+ * @param values The values to sort.
+ * @param ord_rules The order rules.
+ */
 fn reorder_values(values: &mut Vec<u32>, ord_rules: &HashMap<u32, HashSet<u32>>) {
     let mut in_degree = compute_in_degree(values, ord_rules);
 
     let mut queue: BTreeSet<u32> = values
         .iter()
-        .filter(|&v| in_degree.get(v).unwrap_or(&0) == &0)
+        .filter(|&v| in_degree.get(v).is_none())
         .copied()
         .collect();
 
