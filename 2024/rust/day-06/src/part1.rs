@@ -38,14 +38,17 @@ impl From<(usize, usize)> for Position {
 }
 
 #[derive(Debug)]
-struct Move {
+struct Guard {
     position: Position,
     direction: Direction,
 }
 
-impl Move {
+impl Guard {
     fn new(position: Position, direction: Direction) -> Self {
-        Self { position, direction }
+        Self {
+            position,
+            direction,
+        }
     }
 
     fn step(&mut self) {
@@ -67,7 +70,7 @@ impl Move {
         };
     }
 
-    fn check_move(&self, map: &Vec<Vec<Tile>>) -> Tile {
+    fn check_next(&self, map: &Vec<Vec<Tile>>) -> Tile {
         let (x, y) = (self.position.x, self.position.y);
         match self.direction {
             Direction::Up => {
@@ -102,10 +105,17 @@ impl Move {
     }
 }
 
-#[tracing::instrument]
-pub fn process(input: &str) -> miette::Result<String> {
-    let mut curr_move: Move = Move::new((0, 0).into(), Direction::Up);
-    let mut map: Vec<Vec<Tile>> = input
+/**
+ * Parse the input into a map and a starting position
+ * The map is a 2D vector of Tiles
+ * The starting position is a Guard struct
+ *
+ * @param input The input string
+ * @return A tuple containing the map and the starting position
+ */
+fn parse_input(input: &str) -> (Vec<Vec<Tile>>, Guard) {
+    let mut guard: Guard = Guard::new((0, 0).into(), Direction::Up);
+    let map: Vec<Vec<Tile>> = input
         .lines()
         .enumerate()
         .map(|(y, line)| {
@@ -114,19 +124,19 @@ pub fn process(input: &str) -> miette::Result<String> {
                 .map(|(x, mut c)| {
                     match c {
                         '^' => {
-                            curr_move = Move::new((x, y).into(), Direction::Up);
+                            guard = Guard::new((x, y).into(), Direction::Up);
                             c = '.';
                         }
                         'v' => {
-                            curr_move = Move::new((x, y).into(), Direction::Down);
+                            guard = Guard::new((x, y).into(), Direction::Down);
                             c = '.';
                         }
                         '<' => {
-                            curr_move = Move::new((x, y).into(), Direction::Left);
+                            guard = Guard::new((x, y).into(), Direction::Left);
                             c = '.';
                         }
                         '>' => {
-                            curr_move = Move::new((x, y).into(), Direction::Right);
+                            guard = Guard::new((x, y).into(), Direction::Right);
                             c = '.';
                         }
                         _ => {}
@@ -136,25 +146,31 @@ pub fn process(input: &str) -> miette::Result<String> {
                 .collect()
         })
         .collect();
+    (map, guard)
+}
+
+#[tracing::instrument]
+pub fn process(input: &str) -> miette::Result<String> {
+    let (mut map, mut guard) = parse_input(input);
 
     let mut visited = 1;
     loop {
-        let (x, y) = (curr_move.position.x, curr_move.position.y);
-        match curr_move.check_move(&map) {
+        let (x, y) = (guard.position.x, guard.position.y);
+        match guard.check_next(&map) {
             Tile::Empty => {
                 map[y][x] = Tile::Visited;
-                curr_move.step();
+                guard.step();
                 visited += 1;
             }
             Tile::Obstruction => {
-                curr_move.turn_right();
+                guard.turn_right();
             }
             Tile::OutOfMap => {
                 break;
             }
             Tile::Visited => {
                 map[y][x] = Tile::Visited;
-                curr_move.step();
+                guard.step();
             }
         }
     }
