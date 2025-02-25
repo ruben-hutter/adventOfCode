@@ -1,23 +1,27 @@
 #[tracing::instrument]
 pub fn process(input: &str) -> miette::Result<String> {
-    /*
-     * Check if total = num[0] + num[1] + num[2] or total = num[0] * num[1] * num[2]
-     * or total = num[0] + num[1] * num[2] or total = num[0] * num[1] + num[2]
-     * So there are 2^(n-1) possibilities for each total, where n is the length of the nums
-     * Check them and if any is true, add the total to the sum
-     */
-    let mut sum = 0;
-
-    input.lines().for_each(|line| {
+    input
+        .lines()
+        .try_fold(0, |acc, line| -> miette::Result<usize> {
         let mut parts = line.split(": ");
-        let total = parts.next().unwrap().parse::<usize>().unwrap();
-        let nums = parts.next().unwrap().split(" ").map(|x| x.parse::<usize>().unwrap()).collect::<Vec<usize>>();
+        let total = parts
+            .next()
+            .ok_or_else(|| miette::miette!("No total"))?
+            .parse::<usize>()
+            .map_err(|_| miette::miette!("Failed to parse total"))?;
+
+        let nums = parts
+            .next()
+            .ok_or_else(|| miette::miette!("No nums"))?
+            .split(' ')
+            .map(|x| x.parse::<usize>().map_err(|_| miette::miette!("Failed to parse num")))
+            .collect::<Result<Vec<usize>, _>>()?;
 
         let n = nums.len();
         for i in 0..(1 << (n - 1)) {
             let mut total_ = nums[0];
             for j in 0..(n - 1) {
-                if i & (1 << j) > 0 {
+                if i & (1 << j) != 0 {
                     total_ += nums[j + 1];
                 } else {
                     total_ *= nums[j + 1];
@@ -25,13 +29,13 @@ pub fn process(input: &str) -> miette::Result<String> {
             }
 
             if total_ == total {
-                sum += total;
-                break;
+                return Ok(acc + total);
             }
         }
-    });
 
-    Ok(sum.to_string())
+        Ok(acc)
+        })
+    .map(|sum| sum.to_string())
 }
 
 #[cfg(test)]
